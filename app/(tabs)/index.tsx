@@ -1,98 +1,148 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { getAllListing } from "@/api/listings";
+import ListingCard from "@/src/components/ListingCard";
+import SearchBar from "@/src/components/SearchBar";
+import TopTabs, { TopbarTab } from "@/src/components/TopTabs";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "expo-router";
+import { useEffect, useState } from "react";
+import { FlatList, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { listingsType } from "@/api/listings";
+export type RootStackParamList = {
+  propertyDetails: { location: string };
+};
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// const fetchListings=async ()=>{
+//   const res=await fetch("http//localhost:3000");
+//   return res.json();
+// }
+export default function Index() {
+  const [listingData, setListingData] = useState<listingsType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-export default function HomeScreen() {
+  useEffect(() => {
+    const fetchListingData = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getAllListing();
+        setTimeout(() => {
+          setListingData(result);
+          setIsLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.log(error, "listing error");
+        setIsLoading(false);
+      }
+    };
+    fetchListingData();
+  }, []);
+
+  // const {data,isLoading,error}=useQuery({
+  //   queryKey:["listings"],
+  //   queryFn:fetchListings,
+  // })
+  const [activeTab, setActiveTab] = useState<string | number>("1");
+  // const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  console.log(listingData, "data");
+  const datas = [
+    {
+      title: "Beautiful Beachfront Villa",
+      location: "Abiansemal",
+      country: "Indonesia",
+      distance: "1,669 kilometers",
+      dateRange: "Jul 2 - 7",
+      price: 360,
+      rating: 4.87,
+      reviews: 71,
+      images: [
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+        "https://images.unsplash.com/photo-1494526585095-c41746248156",
+      ],
+    },
+    {
+      title: "Cozy Mountain Cabin",
+      location: "Ubud",
+      country: "Indonesia",
+      distance: "1,669 kilometers",
+      dateRange: "Jul 2 - 7",
+      price: 360,
+      rating: 4.87,
+      reviews: 71,
+      images: [
+        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+      ],
+    },
+    {
+      title: "Modern City Apartment",
+      location: "Canggu",
+      country: "Indonesia",
+      distance: "1,669 kilometers",
+      dateRange: "Jul 2 - 7",
+      price: 360,
+      rating: 4.87,
+      reviews: 71,
+      images: [
+        "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+      ],
+    },
+  ];
+  const MOCK_CATEGORIES: TopbarTab[] = [
+    { id: "1", title: "Apartments" },
+    { id: "2", title: "House" },
+    { id: "3", title: "Villa" },
+    { id: "4", title: "Restaurants" },
+    { id: "5", title: "Sports" },
+    { id: "6", title: "Fashion" },
+    { id: "7", title: "Finance" },
+  ];
+  if (isLoading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error:{error}</Text>;
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView style={[styles.container, { paddingTop: 12 }]}>
+      <SearchBar />
+      <TopTabs
+        tabs={MOCK_CATEGORIES}
+        activeTabId={activeTab}
+        onTabPress={(id) => setActiveTab(id)}
+        activeColor="#FF3B30"
+      />
+      <FlatList
+        data={listingData}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ListingCard
+            title={item.title}
+            images={item.images || []}
+            location={item.location || ""}
+            country={item.country || ""}
+            distance={item.distance || ""}
+            dateRange={item.dateRange || ""}
+            price={item.pricePerNight || 0}
+            rating={item.rating || 0}
+            reviews={item.reviews || 0}
+            onPress={() =>
+              navigation.navigate("propertyDetails", {
+                location: item.location,
+              })
+            }
+          />
+        )}
+      />
+    </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
   },
 });

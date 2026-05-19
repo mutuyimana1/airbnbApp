@@ -1,33 +1,64 @@
+import { colors } from '@/src/styles/globalStyles';
+import { EvilIcons, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.surface,
+        },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
+      }}
+    >
+        {/* // if you want you can pass headerShown to each stack screen to be shown for specific screen only */}
       <Tabs.Screen
-        name="index"
+        name='index'
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Explore',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name='search' size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name='list'
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Wish List',
+          tabBarIcon: ({ color, size }) => (
+            <EvilIcons name="heart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='trips'
+        options={{
+          title: 'Trips',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome6 name="airbnb" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='inbox'
+        options={{
+          title: 'Inbox',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="message-reply-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='profile'
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <EvilIcons name="user" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>
